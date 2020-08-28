@@ -26,7 +26,7 @@ RUN apt-get update && \
     apt-add-repository -y ppa:deadsnakes/ppa && \
     apt-get update && apt-get upgrade -qy && \
     apt-get install language-pack-en locales git python3.6 python3-pip libmysqlclient-dev libssl-dev python3-dev python3.8-dev python3.8-distutils -qy && \
-    pip3 install --upgrade pip setuptools && \
+    python3.8 -m pip install --upgrade pip setuptools && \
     rm -rf /var/lib/apt/lists/*
 
 RUN locale-gen en_US.UTF-8
@@ -46,7 +46,7 @@ WORKDIR /edx/app/notes
 COPY requirements/base.txt /edx/app/notes/requirements/base.txt
 
 # Dependencies are installed as root so they cannot be modified by the application user.
-RUN pip3 install -r requirements/base.txt
+RUN python3.8 -m pip install -r requirements/base.txt
 
 RUN mkdir -p /edx/var/log
 
@@ -63,6 +63,6 @@ COPY . /edx/app/notes
 
 
 FROM app as newrelic
-RUN pip install newrelic
+RUN python3.8 -m pip install newrelic
 CMD newrelic-admin run-program gunicorn --workers=2 --name notes -c /edx/app/notes/notesserver/docker_gunicorn_configuration.py --log-file - --max-requests=1000 notesserver.wsgi:application
 
